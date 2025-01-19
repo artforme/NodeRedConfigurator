@@ -2,13 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeRedConfigurator", "NodeRedConfigurator\NodeRedConfigurator.csproj", "{68EC7C9F-5041-4CDB-8A0A-8ACF981556C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Views", "Views\Views.csproj", "{7697F419-C0D9-4A27-A6B3-BB2DEFEA3F3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{7697F419-C0D9-4A27-A6B3-BB2DEFEA3F3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{010BA857-7191-4B80-83E0-0B2AD0D0A22F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{010BA857-7191-4B80-83E0-0B2AD0D0A22F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModels", "ViewModels\ViewModels.csproj", "{E61E06D6-5C5E-4C08-B238-89C388A593FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{E61E06D6-5C5E-4C08-B238-89C388A593FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{4F21B9AE-D3A8-48B3-9FF5-88723D7C5957}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{4F21B9AE-D3A8-48B3-9FF5-88723D7C5957}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

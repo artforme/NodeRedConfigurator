@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("NodeRedConfigurator")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3cf648cc8fce58bd70a34ed6ef921b79d6a5cd2")]
-[assembly: System.Reflection.AssemblyProductAttribute("NodeRedConfigurator")]
-[assembly: System.Reflection.AssemblyTitleAttribute("NodeRedConfigurator")]
+[assembly: System.Reflection.AssemblyProductAttribute("Core")]
+[assembly: System.Reflection.AssemblyTitleAttribute("Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Создано классом WriteCodeFragment MSBuild.
