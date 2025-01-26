@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 
-namespace Infrastructure.JsonProcessing;
+namespace Infrastructure.Generators;
 
-public class IdNodesGenerator
+public class IdGenerator
 {
     public string GenerateSecureIdNodes(int length = 16)
     {

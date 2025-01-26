@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "foTvd5rq5P4=",
+  "dgSpecHash": "hSHFcFs0mM8=",
   "success": true,
   "projectFilePath": "C:\\Users\\OFC\\RiderProjects\\NodeRedConfigurator\\Infrastructure\\Infrastructure.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\OFC\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
