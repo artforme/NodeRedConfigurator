@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NodeRedConfigurator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e2d97d12d3e17c25d484730194ac4f5c54abb29a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7f7b4b1589f47b1058de950e5f6346949c59a5d7")]
 [assembly: System.Reflection.AssemblyProductAttribute("NodeRedConfigurator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NodeRedConfigurator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

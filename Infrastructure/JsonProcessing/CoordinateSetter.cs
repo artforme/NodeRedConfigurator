@@ -8,7 +8,7 @@ public class CoordinateSetter
     {
         foreach (JObject item in data)
         {
-            string flow = item["z"].ToString();
+            string flow = item["tab"].ToString();
             int height = item["height"].Value<int>();
             
             if (!flowCounters.ContainsKey(flow))
