@@ -1,0 +1,39 @@
+﻿/NodeRedConfigurator.sln
+
+# Бинарные файлы сборки
+bin/
+obj/
+TestResults/
+
+# Временные файлы сборки и кэша
+*.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.cache
+*.log
+
+
+# Автогенерируемые файлы .NET
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+*.csproj.nuget.dgspec.json
+*.csproj.user
+
+# Файлы NuGet
+project.assets.json
+project.packagespec.json
+packages.lock.json
+packages.config
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+
+# Файлы Rider
+*.sln.iml
+.idea/
