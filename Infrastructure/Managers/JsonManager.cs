@@ -8,14 +8,14 @@ namespace Infrastructure.Managers;
 public class JsonManager
 {
     private readonly Dictionary<Guid, Chain> _chains = new Dictionary<Guid, Chain>();
-    
-    private readonly IdGenerator _idGenerator = new IdGenerator();
-    
-    private readonly CoordinateSetter _coordinateSetter = new CoordinateSetter();
-    
-    private readonly IdNodesSetter _idNodesSetter = new IdNodesSetter(new IdGenerator());
-    
-    private readonly PropertiesSetter _propertiesSetter = new PropertiesSetter();
+
+    private readonly IdGenerator _idGenerator;
+
+    private readonly CoordinateSetter _coordinateSetter;
+
+    private readonly IdNodesSetter _idNodesSetter;
+
+    private readonly PropertiesSetter _propertiesSetter;
 
     private readonly Info _aliceFlowId;
     
@@ -23,18 +23,34 @@ public class JsonManager
 
     private readonly Info _cloudId;
 
+    private readonly Info _bridgeId;
+
     private readonly Info _mqttServer;
-    
-    public Info Model { get; set; }
-    
+
+    private readonly Info _model;
+
+    private readonly Info _serialNumber;
     
 
-    public JsonManager()
+    public JsonManager(
+        IdGenerator idGenerator,
+        CoordinateSetter coordinateSetter,
+        IdNodesSetter idNodesSetter,
+        PropertiesSetter propertiesSetter,
+        Info model,
+        Info serialNumber)
     {
-        _aliceFlowId = new Info(_idGenerator.GenerateSecureIdNodes());
-        _appleFlowId = new Info(_idGenerator.GenerateSecureIdNodes());
-        _cloudId = new Info(_idGenerator.GenerateSecureIdNodes());
-        _mqttServer = new Info(_idGenerator.GenerateSecureIdNodes());
+        _idGenerator = idGenerator;
+        _coordinateSetter = coordinateSetter;
+        _idNodesSetter = idNodesSetter;
+        _propertiesSetter = propertiesSetter;
+        _model = model;
+        _serialNumber = serialNumber;
+        _aliceFlowId = new Info(idGenerator.GenerateSecureIdNodes());
+        _appleFlowId = new Info(idGenerator.GenerateSecureIdNodes());
+        _cloudId = new Info(idGenerator.GenerateSecureIdNodes());
+        _bridgeId = new Info(idGenerator.GenerateSecureIdNodes());
+        _mqttServer = new Info(idGenerator.GenerateSecureIdNodes());
     }
 
     public void Run()

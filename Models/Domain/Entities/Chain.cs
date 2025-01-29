@@ -9,5 +9,5 @@ public abstract class Chain
         Properties = properties;
     }
     
-    public abstract (string search, string replace)[] GetProperties();
+    public abstract (string search, object replace)[] GetProperties();
 }

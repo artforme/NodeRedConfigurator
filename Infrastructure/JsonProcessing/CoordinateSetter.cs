@@ -4,7 +4,7 @@ namespace Infrastructure.JsonProcessing;
 
 public class CoordinateSetter
 {
-    public JArray SearchAndSetCoordinates(JArray data, Dictionary<string, int> flowCounters)
+    public JArray UpdateCoordinates(JArray data, Dictionary<string, int> flowCounters)
     {
         foreach (JObject item in data)
         {

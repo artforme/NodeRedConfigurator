@@ -7,13 +7,10 @@ namespace Infrastructure.JsonProcessing;
 public class IdNodesSetter
 {
     private readonly IdGenerator _idGenerator;
-    
-    private readonly Dictionary<string, string> _idCache;
 
     public IdNodesSetter(IdGenerator idGenerator)
     {
         _idGenerator = idGenerator;
-        _idCache = new Dictionary<string, string>();
     }
     
     public string SearchAndSetIdNodes(string json)
@@ -29,6 +26,8 @@ public class IdNodesSetter
     
     private void ReplaceIdNodes(JToken token, string pattern)
     {
+        var idCache = new Dictionary<string, string>();
+        
         if (token is JObject obj)
         {
             foreach (var property in obj.Properties())
@@ -41,10 +40,10 @@ public class IdNodesSetter
                     {
                         string idNode = match.Value;
                         
-                        if (!_idCache.TryGetValue(idNode, out string newValue))
+                        if (!idCache.TryGetValue(idNode, out string newValue))
                         {
                             newValue = _idGenerator.GenerateSecureIdNodes();
-                            _idCache[idNode] = newValue;
+                            idCache[idNode] = newValue;
                         }
                         
                         property.Value = newValue;
@@ -68,10 +67,10 @@ public class IdNodesSetter
                     {
                         string idNode = match.Value;
                         
-                        if (!_idCache.TryGetValue(idNode, out string newValue))
+                        if (!idCache.TryGetValue(idNode, out string newValue))
                         {
                             newValue = _idGenerator.GenerateSecureIdNodes();
-                            _idCache[idNode] = newValue;
+                            idCache[idNode] = newValue;
                         }
                         
                         array[i] = newValue;
