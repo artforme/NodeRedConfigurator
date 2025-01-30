@@ -17,19 +17,7 @@ public class JsonManager
 
     private readonly PropertiesSetter _propertiesSetter;
 
-    private readonly Info _aliceFlowId;
-    
-    private readonly Info _appleFlowId;
-
-    private readonly Info _cloudId;
-
-    private readonly Info _bridgeId;
-
-    private readonly Info _mqttServer;
-
-    private readonly Info _model;
-
-    private readonly Info _serialNumber;
+    private readonly GlobalSettings _globalSettings;
     
 
     public JsonManager(
@@ -37,20 +25,14 @@ public class JsonManager
         CoordinateSetter coordinateSetter,
         IdNodesSetter idNodesSetter,
         PropertiesSetter propertiesSetter,
-        Info model,
-        Info serialNumber)
+        GlobalSettings globalSettings
+        )
     {
         _idGenerator = idGenerator;
         _coordinateSetter = coordinateSetter;
         _idNodesSetter = idNodesSetter;
         _propertiesSetter = propertiesSetter;
-        _model = model;
-        _serialNumber = serialNumber;
-        _aliceFlowId = new Info(idGenerator.GenerateSecureIdNodes());
-        _appleFlowId = new Info(idGenerator.GenerateSecureIdNodes());
-        _cloudId = new Info(idGenerator.GenerateSecureIdNodes());
-        _bridgeId = new Info(idGenerator.GenerateSecureIdNodes());
-        _mqttServer = new Info(idGenerator.GenerateSecureIdNodes());
+        _globalSettings = globalSettings;
     }
 
     public void Run()
