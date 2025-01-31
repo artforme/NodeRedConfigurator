@@ -1,4 +1,4 @@
-﻿using Models.Domain.ValueOjbects;
+﻿using Models.Domain.ValueObjects;
 
 namespace Models.Domain.Entities;
 
