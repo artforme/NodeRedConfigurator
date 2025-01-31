@@ -13,10 +13,8 @@ public class IdNodesSetter
         _idGenerator = idGenerator;
     }
     
-    public string SearchAndSetIdNodes(string json)
+    public string SearchAndSetIdNodes(JToken jsonToken)
     {
-        JToken jsonToken = JToken.Parse(json);
-        
         string pattern = @"%%IDNode_(\d+)%%";
         
         ReplaceIdNodes(jsonToken, pattern);

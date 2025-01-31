@@ -43,10 +43,10 @@ public class CoordinateSetterTests
         var data = JArray.Parse(json);
         var flowCounters = new Dictionary<string, int>();
         
-        var result = coordinateSetter.UpdateCoordinates(data, flowCounters);
+        coordinateSetter.UpdateCoordinates(data, flowCounters);
         
-        Assert.Equal(15, result[0]["template"][0]["y"].Value<int>()); // 5 + 10
-        Assert.Equal(30, result[1]["template"][0]["y"].Value<int>()); // 10 + 20
+        Assert.Equal(15, data[0]["template"][0]["y"].Value<int>()); // 5 + 10
+        Assert.Equal(30, data[1]["template"][0]["y"].Value<int>()); // 10 + 20
     }
 
     [Fact]
@@ -60,10 +60,10 @@ public class CoordinateSetterTests
         var data = JArray.Parse(json);
         var flowCounters = new Dictionary<string, int>();
         
-        var result = coordinateSetter.UpdateCoordinates(data, flowCounters);
+        coordinateSetter.UpdateCoordinates(data, flowCounters);
         
-        Assert.Equal(15, result[0]["template"][0]["y"].Value<int>()); // 5 + 10
-        Assert.Equal(40, result[1]["template"][0]["y"].Value<int>()); // 10 + 30
+        Assert.Equal(15, data[0]["template"][0]["y"].Value<int>()); // 5 + 10
+        Assert.Equal(40, data[1]["template"][0]["y"].Value<int>()); // 10 + 30
     }
     
     [Fact]
@@ -101,9 +101,9 @@ public class CoordinateSetterTests
         var data = JArray.Parse(json);
         var flowCounters = new Dictionary<string, int>();
         
-        var result = coordinateSetter.UpdateCoordinates(data, flowCounters);
+        coordinateSetter.UpdateCoordinates(data, flowCounters);
         
-        Assert.Equal(110, result[0]["template"][0]["y"].Value<int>()); // 40+70
+        Assert.Equal(110, data[0]["template"][0]["y"].Value<int>()); // 40+70
     }
     
     
