@@ -1,8 +1,10 @@
-﻿namespace Models.Domain.Entities.RgbStrip;
+﻿using Models.Domain.ValueObjects;
+
+namespace Models.Domain.Entities.RgbStrip;
 
 public class RgbStripChain : Chain
 {
-    public RgbStripChain(Dictionary<string, object> properties) : base(properties) { }
+    public RgbStripChain(Dictionary<string, object> properties) : base(new Info("RgbStrip"), properties) { }
 
     public override (string search, object replace)[] GetProperties()
     {

@@ -1,4 +1,4 @@
-﻿namespace Models.Domain.ValueOjbects;
+﻿namespace Models.Domain.ValueObjects;
 
 public record Address
 {
