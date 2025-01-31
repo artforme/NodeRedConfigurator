@@ -1,13 +1,14 @@
 using Infrastructure.Generators;
 using Infrastructure.JsonProcessing;
 using Models.Domain.Entities;
-using Models.Domain.ValueOjbects;
 
 namespace Infrastructure.Managers;
 
 public class JsonManager
 {
-    private readonly Dictionary<Guid, Chain> _chains = new Dictionary<Guid, Chain>();
+    private readonly ChainManager _chainManager;
+    
+    private readonly TemplateManager _templateManager;
 
     private readonly IdGenerator _idGenerator;
 
@@ -21,6 +22,8 @@ public class JsonManager
     
 
     public JsonManager(
+        ChainManager chainManager,
+        TemplateManager templateManager,
         IdGenerator idGenerator,
         CoordinateSetter coordinateSetter,
         IdNodesSetter idNodesSetter,
@@ -28,6 +31,8 @@ public class JsonManager
         GlobalSettings globalSettings
         )
     {
+        _chainManager = chainManager;
+        _templateManager = templateManager;
         _idGenerator = idGenerator;
         _coordinateSetter = coordinateSetter;
         _idNodesSetter = idNodesSetter;
