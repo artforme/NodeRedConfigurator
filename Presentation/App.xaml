@@ -1,9 +1,46 @@
 ﻿<Application x:Class="Presentation.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Presentation"
-             StartupUri="MainWindow.xaml">
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:helpers="clr-namespace:Presentation.Helpers"
+             StartupUri="/Views/MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                <Setter Property="materialDesign:HintAssist.Foreground" Value="White"/>
+            </Style>
+            
+            <DataTemplate x:Key="TextTemplate">
+                <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+            </DataTemplate>
+
+            <DataTemplate x:Key="NumberTemplate">
+                <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="100"
+                         PreviewTextInput="OnNumberValidation"/>
+            </DataTemplate>
+
+            <DataTemplate x:Key="BooleanTemplate">
+                <CheckBox IsChecked="{Binding Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </DataTemplate>
+
+            <DataTemplate x:Key="DropdownTemplate">
+                <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Value}" Width="150"/>
+            </DataTemplate>
+
+            <!-- Селектор шаблонов -->
+            <helpers:ParameterTemplateSelector x:Key="ParameterTemplateSelector"
+                                             TextTemplate="{StaticResource TextTemplate}"
+                                             NumberTemplate="{StaticResource NumberTemplate}"
+                                             BooleanTemplate="{StaticResource BooleanTemplate}"
+                                             DropdownTemplate="{StaticResource DropdownTemplate}"/>
+            
+            <ResourceDictionary.MergedDictionaries> 
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
