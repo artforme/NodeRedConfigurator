@@ -1,0 +1,141 @@
+﻿<Window x:Class="Presentation.Views.ChainSelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Chain Selection"
+        Width="800" Height="600"
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="False"
+        Background="Transparent">
+
+    <Window.Resources>
+        <!-- Стилизованный ComboBox -->
+        <Style x:Key="CustomComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="#273238"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#2C3E50"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Стиль для элементов выпадающего списка -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="#273238"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль кнопок -->
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="#1E272E" CornerRadius="10" Padding="10" BorderThickness="1" BorderBrush="#2C3E50">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Выбор типа цепи -->
+            <Grid Grid.Row="0" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Chain Type:" 
+                           Foreground="White" 
+                           FontSize="16" 
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding ChainTypes}"
+                          SelectedItem="{Binding SelectedChainType}"
+                          Style="{StaticResource CustomComboBoxStyle}"
+                          Grid.Column="1"
+                          HorizontalAlignment="Stretch"/>
+            </Grid>
+
+            <!-- Сетка параметров (начинается с верхнего левого угла, равномерно в 2 столбца) -->
+            <ScrollViewer Grid.Row="1" 
+                          Background="#273238"
+                          Padding="10"
+                          BorderThickness="1"
+                          BorderBrush="#2C3E50">
+                <ItemsControl ItemsSource="{Binding ChainParameters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="{Binding Name}" 
+                                           Foreground="White" 
+                                           FontWeight="Bold" 
+                                           VerticalAlignment="Center"/>
+                                <ContentControl Content="{Binding}" 
+                                                ContentTemplateSelector="{StaticResource ParameterTemplateSelector}"
+                                                Grid.Column="1"
+                                                Foreground="White" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Кнопки управления -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                <Button Content="Save"
+                        Command="{Binding SaveCommand}"
+                        Style="{StaticResource RoundedButtonStyle}"/>
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Background="#E74C3C"
+                        Style="{StaticResource RoundedButtonStyle}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>
