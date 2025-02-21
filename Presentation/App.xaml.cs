@@ -1,12 +1,14 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Presentation;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
 public partial class App : Application
 {
+    private void OnNumberValidation(object sender, TextCompositionEventArgs e)
+    {
+        Regex regex = new Regex("^[0-9]+$");
+        e.Handled = !regex.IsMatch(e.Text);
+    }
 }
