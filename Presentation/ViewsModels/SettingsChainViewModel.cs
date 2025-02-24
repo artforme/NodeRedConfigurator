@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using Presentation.Helpers;
 
 namespace Presentation.ViewsModels;
+
 public class SettingsChainViewModel : INotifyPropertyChanged
 {
     private readonly ConfigManager _configManager;
@@ -38,11 +39,11 @@ public class SettingsChainViewModel : INotifyPropertyChanged
     public SettingsChainViewModel(ConfigManager configManager)
     {
         _configManager = configManager ?? throw new ArgumentNullException(nameof(configManager));
-        SelectAlicePathCommand = new RelayCommand(SelectAlicePath);
-        SelectApplePathCommand = new RelayCommand(SelectApplePath);
+        SelectAlicePathCommand = new RelayCommand(SelectAlicePath, CanSelectPath);
+        SelectApplePathCommand = new RelayCommand(SelectApplePath, CanSelectPath);
     }
 
-    private void SelectAlicePath()
+    private void SelectAlicePath(object parameter)
     {
         var dialog = new OpenFileDialog
         {
@@ -56,7 +57,7 @@ public class SettingsChainViewModel : INotifyPropertyChanged
         }
     }
 
-    private void SelectApplePath()
+    private void SelectApplePath(object parameter)
     {
         var dialog = new OpenFileDialog
         {
@@ -68,6 +69,11 @@ public class SettingsChainViewModel : INotifyPropertyChanged
             ApplePath = dialog.FileName;
             _configManager.SetTemplatePath(Type, "Apple", ApplePath); // Сохраняем путь в ConfigManager
         }
+    }
+
+    private bool CanSelectPath(object parameter)
+    {
+        return true; // Можно настроить более сложную логику, если нужно
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

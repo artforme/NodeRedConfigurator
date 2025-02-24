@@ -1,16 +1,21 @@
-﻿using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using System.Windows;
+using Infrastructure.Managers;
 using Presentation.ViewsModels;
 
 namespace Presentation.Views;
 
 public partial class ChainSelectionWindow : Window
 {
-    public ChainSelectionWindow()
+    public ChainSelectionWindow(ChainManager chainManager)
     {
         InitializeComponent();
-        DataContext = new ChainSelectionViewModel();
+        var viewModel = new ChainSelectionViewModel(chainManager);
+        DataContext = viewModel;
+        viewModel.RequestClose += ViewModel_RequestClose;
+    }
+
+    private void ViewModel_RequestClose(object sender, EventArgs e)
+    {
+        Close();
     }
 }
