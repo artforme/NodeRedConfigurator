@@ -14,7 +14,7 @@ public partial class SettingsWindow : Window
         InitializeComponent();
 
         _configManager = configManager ?? throw new ArgumentNullException(nameof(configManager));
-        ViewModel = new MainViewModel(_configManager);
+        ViewModel = new MainViewModel(_configManager, new ChainManager());
         DataContext = ViewModel;
 
         LoadTemplates();

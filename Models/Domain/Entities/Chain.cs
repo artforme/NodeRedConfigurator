@@ -4,7 +4,7 @@ namespace Models.Domain.Entities;
 
 public abstract class Chain
 {
-    public Guid Id { get; protected set; }
+    public Guid Id { get; set; }
 
     public Info Type { get; }
     
