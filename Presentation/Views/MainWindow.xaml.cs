@@ -1,14 +1,15 @@
 ﻿using System.Windows;
-using Infrastructure.Managers;
+
 
 namespace Presentation.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly ConfigManager _configManager = new ConfigManager("templates.json");
+    private readonly ConfigManager _configManager;
 
     public MainWindow()
     {
+        _configManager = new ConfigManager();
         InitializeComponent();
     }
 
