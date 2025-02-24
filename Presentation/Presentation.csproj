@@ -34,4 +34,16 @@
       <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Templates.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Templates\RGBStripAlice.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Templates\RGBStripHomeKit.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
