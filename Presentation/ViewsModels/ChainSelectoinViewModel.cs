@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
@@ -15,6 +16,8 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
     public ChainService ChainService { get; }
     private string _selectedChainType;
     private readonly ILogger _logger;
+    public bool IsEditing { get; }
+    public Guid? ChainId { get; }
 
     public ObservableCollection<string> ChainTypes { get; }
     public ObservableCollection<ChainParameterViewModel> ChainParameters { get; set; }
@@ -41,6 +44,7 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         ChainTypes = ChainService.GetChainTypes();
         ChainParameters = new ObservableCollection<ChainParameterViewModel>();
+        IsEditing = false;
 
         SaveCommand = new RelayCommand(Save, CanSave);
         CancelCommand = new RelayCommand(Cancel);
@@ -48,20 +52,42 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
 
     public ChainSelectionViewModel(ChainService chainService, Chain chain, ILogger logger) : this(chainService, logger)
     {
+        IsEditing = true;
+        ChainId = chain.Id;
         SelectedChainType = chain.Type.Value;
-        ChainParameters = ChainService.GetParametersFromChain(chain);
+        ChainParameters = MergeParameters(chain); // Загружаем существующие параметры
+    }
+
+    private ObservableCollection<ChainParameterViewModel> MergeParameters(Chain chain)
+    {
+        _logger.Info($"Merging parameters for chain: {chain.Type.Value}");
+        var defaultParams = ChainService.GetParametersForChainType(chain.Type.Value);
+        var existingParams = ChainService.GetParametersFromChain(chain);
+
+        foreach (var param in existingParams)
+        {
+            var defaultParam = defaultParams.FirstOrDefault(p => p.Name == param.Name);
+            if (defaultParam != null)
+            {
+                defaultParam.Value = param.Value; // Переносим значения из существующей цепи
+            }
+        }
+        return defaultParams;
     }
 
     private void LoadParameters()
     {
         _logger.Info($"Loading parameters for chain type: {SelectedChainType}");
-        ChainParameters.Clear();
-        if (!string.IsNullOrEmpty(SelectedChainType))
+        if (!IsEditing) // При редактировании параметры уже загружены
         {
-            var parameters = ChainService.GetParametersForChainType(SelectedChainType);
-            foreach (var param in parameters)
+            ChainParameters.Clear();
+            if (!string.IsNullOrEmpty(SelectedChainType))
             {
-                ChainParameters.Add(param);
+                var parameters = ChainService.GetParametersForChainType(SelectedChainType);
+                foreach (var param in parameters)
+                {
+                    ChainParameters.Add(param);
+                }
             }
         }
     }
@@ -78,7 +104,14 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
         try
         {
             var chain = ChainService.CreateChain(SelectedChainType, ChainParameters);
-            ChainService.SaveChain(chain);
+            if (IsEditing && ChainId.HasValue)
+            {
+                ChainService.UpdateChain(ChainId.Value, chain);
+            }
+            else
+            {
+                ChainService.SaveChain(chain);
+            }
             OnRequestClose();
         }
         catch (InvalidOperationException ex)
