@@ -1,27 +1,27 @@
 ﻿using System.Windows;
-using Infrastructure.Managers;
-using Presentation.ViewsModels;
+using Infrastructure.Logging;
+using Presentation.Services;
+using Presentation.ViewModels;
 
 namespace Presentation.Views;
 
 public partial class SettingsWindow : Window
 {
     private readonly ConfigManager _configManager;
-    public MainViewModel ViewModel { get; }
+    private readonly ILogger _logger;
 
-    public SettingsWindow(ConfigManager configManager)
+    public SettingsWindow(ConfigManager configManager, ChainService chainService, ILogger logger)
     {
         InitializeComponent();
-
         _configManager = configManager ?? throw new ArgumentNullException(nameof(configManager));
-        ViewModel = new MainViewModel(_configManager, new ChainManager());
-        DataContext = ViewModel;
-
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        DataContext = new MainViewModel(_configManager, chainService, _logger);
         LoadTemplates();
     }
 
     private void LoadTemplates()
     {
-        ViewModel.LoadTemplates();
+        _logger.Info("Loading templates in Settings window.");
+        ((MainViewModel)DataContext).LoadTemplates();
     }
 }

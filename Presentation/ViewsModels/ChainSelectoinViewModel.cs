@@ -1,18 +1,22 @@
-﻿using Models.Domain.Entities;
-using Models.Domain.Entities.RgbStrip;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
-using Infrastructure.Managers;
-using Models.Domain.ValueObjects;
+using Infrastructure.Logging;
+using Models.Domain.Entities;
 using Presentation.Helpers;
+using Presentation.Services;
+using Presentation.ViewsModels;
 
-namespace Presentation.ViewsModels;
+namespace Presentation.ViewModels;
 
 public class ChainSelectionViewModel : INotifyPropertyChanged
 {
+    public ChainService ChainService { get; }
     private string _selectedChainType;
-    public ObservableCollection<string> ChainTypes { get; set; }
+    private readonly ILogger _logger;
+
+    public ObservableCollection<string> ChainTypes { get; }
     public ObservableCollection<ChainParameterViewModel> ChainParameters { get; set; }
 
     public string SelectedChainType
@@ -22,63 +26,43 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
         {
             _selectedChainType = value;
             OnPropertyChanged(nameof(SelectedChainType));
-            LoadParametersForSelectedType();
+            LoadParameters();
         }
     }
 
     public ICommand SaveCommand { get; }
     public ICommand CancelCommand { get; }
 
-    private readonly ChainManager _chainManager;
-
-    // Событие для уведомления View о необходимости закрытия
     public event EventHandler RequestClose;
 
-    public ChainSelectionViewModel(ChainManager chainManager)
+    public ChainSelectionViewModel(ChainService chainService, ILogger logger)
     {
-        _chainManager = chainManager ?? throw new ArgumentNullException(nameof(chainManager));
-        ChainTypes = new ObservableCollection<string> { "RgbStrip", "Type1", "Type2", "Type3" }; // Загрузите из ConfigManager, если нужно
+        ChainService = chainService ?? throw new ArgumentNullException(nameof(chainService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ChainTypes = ChainService.GetChainTypes();
         ChainParameters = new ObservableCollection<ChainParameterViewModel>();
 
         SaveCommand = new RelayCommand(Save, CanSave);
         CancelCommand = new RelayCommand(Cancel);
     }
 
-    // Конструктор для редактирования существующей цепи
-    public ChainSelectionViewModel(ChainManager chainManager, string chainType, ObservableCollection<ChainParameterViewModel> parameters) : this(chainManager)
+    public ChainSelectionViewModel(ChainService chainService, Chain chain, ILogger logger) : this(chainService, logger)
     {
-        SelectedChainType = chainType;
-        if (parameters != null)
-        {
-            ChainParameters.Clear();
-            foreach (var param in parameters)
-            {
-                ChainParameters.Add(new ChainParameterViewModel(param.Name, param.Type, param.Options)
-                {
-                    Value = param.Value // Устанавливаем предыдущее значение
-                });
-            }
-        }
+        SelectedChainType = chain.Type.Value;
+        ChainParameters = ChainService.GetParametersFromChain(chain);
     }
 
-    private void LoadParametersForSelectedType()
+    private void LoadParameters()
     {
+        _logger.Info($"Loading parameters for chain type: {SelectedChainType}");
         ChainParameters.Clear();
-
-        switch (SelectedChainType)
+        if (!string.IsNullOrEmpty(SelectedChainType))
         {
-            case "RgbStrip":
-                ChainParameters.Add(new ChainParameterViewModel("Name", "Text"));
-                ChainParameters.Add(new ChainParameterViewModel("Device", "Text"));
-                ChainParameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
-                ChainParameters.Add(new ChainParameterViewModel("DevIndex", "Number"));
-                ChainParameters.Add(new ChainParameterViewModel("Room", "Text"));
-                break;
-            case "Type1":
-                ChainParameters.Add(new ChainParameterViewModel("Name", "Text"));
-                ChainParameters.Add(new ChainParameterViewModel("Count", "Number"));
-                ChainParameters.Add(new ChainParameterViewModel("Active", "Boolean"));
-                break;
+            var parameters = ChainService.GetParametersForChainType(SelectedChainType);
+            foreach (var param in parameters)
+            {
+                ChainParameters.Add(param);
+            }
         }
     }
 
@@ -86,28 +70,27 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
     {
         if (string.IsNullOrEmpty(SelectedChainType))
         {
+            _logger.Warning("Save attempted with no chain type selected.");
+            MessageBox.Show("Please select a chain type.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
-        Dictionary<string, object> properties = new();
-        foreach (var param in ChainParameters)
+        try
         {
-            properties[param.Name] = param.Value ?? string.Empty;
+            var chain = ChainService.CreateChain(SelectedChainType, ChainParameters);
+            ChainService.SaveChain(chain);
+            OnRequestClose();
         }
-
-        Chain chain;
-        switch (SelectedChainType)
+        catch (InvalidOperationException ex)
         {
-            case "RgbStrip":
-                chain = new RgbStripChain(properties);
-                break;
-            default:
-                throw new NotSupportedException($"Chain type {SelectedChainType} is not supported.");
+            _logger.Error("Validation failed during save.", ex);
+            MessageBox.Show(ex.Message, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
-
-        Guid chainId = _chainManager.AddChain(chain);
-        Console.WriteLine($"Created/Updated chain with ID: {chainId} (Chain ID: {chain.Id})"); // Логируем оба Id
-        OnRequestClose(); // Уведомляем View о закрытии после сохранения
+        catch (Exception ex)
+        {
+            _logger.Error("Unexpected error during save.", ex);
+            MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private bool CanSave(object parameter)
@@ -117,7 +100,8 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
 
     private void Cancel(object parameter)
     {
-        OnRequestClose(); // Уведомляем View о закрытии при отмене
+        _logger.Info("Chain selection canceled.");
+        OnRequestClose();
     }
 
     protected virtual void OnRequestClose()
