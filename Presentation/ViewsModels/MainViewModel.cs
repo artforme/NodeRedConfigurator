@@ -99,18 +99,15 @@ public class MainViewModel : INotifyPropertyChanged
             }
 
             _logger.Info($"Editing chain with ID: {chainId}");
-            var selectionWindow = new ChainSelectionWindow(ChainService)
-            {
-                DataContext = new ChainSelectionViewModel(ChainService, _logger)
-            };
-            var viewModel = (ChainSelectionViewModel)selectionWindow.DataContext;
+            var selectionWindow = new ChainSelectionWindow(ChainService, chain); // Передаем chain для редактирования
+            var viewModel = new ChainSelectionViewModel(ChainService, chain, _logger);
+            selectionWindow.DataContext = viewModel;
+
             viewModel.RequestClose += (s, e) =>
             {
                 if (selectionWindow.DialogResult == true)
                 {
-                    var updatedChain = ChainService.CreateChain(viewModel.SelectedChainType, viewModel.ChainParameters);
-                    ChainService.UpdateChain(chainId, updatedChain);
-                    LoadChains();
+                    LoadChains(); // Обновляем список после редактирования
                 }
                 selectionWindow.Close();
             };
