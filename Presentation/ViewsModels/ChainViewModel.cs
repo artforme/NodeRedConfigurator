@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using Models.Domain.Entities;
-using Infrastructure.Managers;
 
 namespace Presentation.ViewsModels;
 
@@ -10,7 +9,7 @@ public class ChainViewModel : INotifyPropertyChanged
 
     public Guid Id => _chain.Id;
     public string Type => _chain.Type.Value;
-    public string Name => _chain.Properties.TryGetValue("%%name%%", out object value) ? value.ToString() : "Unnamed";
+    public string Name => _chain.Properties.TryGetValue("Name", out object value) ? value.ToString() : "Unnamed";
 
     public ChainViewModel(Chain chain)
     {

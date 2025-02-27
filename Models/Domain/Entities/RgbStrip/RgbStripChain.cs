@@ -8,29 +8,29 @@ public class RgbStripChain : Chain
 
     public override (string search, object replace)[] GetProperties()
     {
-        var keysToExtract = new List<string>
+        var keyMapping = new Dictionary<string, string>
         {
-            "%%name%%",
-            "%%device%%",
-            "%%dev_address%%",
-            "%%dev_index%%",
-            "%%room%%"
+            { "Name", "%%name%%" },
+            { "Device", "%%device%%" },
+            { "DevAddress", "%%dev_address%%" },
+            { "DevIndex", "%%dev_index%%" },
+            { "Room", "%%room%%" }
         };
-        
+
         var propertiesList = new List<(string search, object replace)>();
-        
-        foreach (var key in keysToExtract)
+
+        foreach (var readableKey in keyMapping.Keys)
         {
-            if (Properties.TryGetValue(key, out var value))
+            if (Properties.TryGetValue(readableKey, out var value))
             {
-                propertiesList.Add((key, value));
+                propertiesList.Add((keyMapping[readableKey], value));
             }
             else
             {
-                throw new KeyNotFoundException($"Property '{key}' not found in the properties dictionary.");
+                throw new KeyNotFoundException($"Property '{readableKey}' not found in the properties dictionary.");
             }
         }
-        
+
         return propertiesList.ToArray();
     }
 }
