@@ -103,16 +103,19 @@ public class ChainService
     public void UpdateChain(Guid chainId, Chain chain)
     {
         _logger.Info($"Attempting to update chain with ID: {chainId}");
+        var oldChain = ChainManager.GetChain(chainId); // Получаем старый объект
+        _logger.Info($"Chain properties before update: {string.Join(", ", oldChain.Properties.Select(kvp => $"{kvp.Key}: {kvp.Value}"))}");
         var validationResult = ValidateChain(chain);
         if (!validationResult.IsValid)
         {
             _logger.Warning($"Chain validation failed: {validationResult.ErrorMessage}");
             throw new InvalidOperationException(validationResult.ErrorMessage);
         }
-
         chain.Id = chainId;
         ChainManager.UpdateChain(chainId, chain);
         _logger.Info($"Chain updated successfully: {chainId}");
+        var updatedChain = ChainManager.GetChain(chainId);
+        _logger.Info($"Chain properties after update: {string.Join(", ", updatedChain.Properties.Select(kvp => $"{kvp.Key}: {kvp.Value}"))}");
     }
 
     private ValidationResult ValidateChain(Chain chain)

@@ -34,7 +34,7 @@ public partial class MainWindow : Window
     {
         _logger.Info("Opening Chain Selection window.");
         var chainService = ((MainViewModel)DataContext).ChainService;
-        var selectionWindow = new ChainSelectionWindow(chainService);
+        var selectionWindow = new ChainSelectionWindow(chainService, _logger);
         selectionWindow.ShowDialog();
     }
 }

@@ -139,6 +139,15 @@ public class ChainSelectionViewModel : INotifyPropertyChanged
 
     protected virtual void OnRequestClose()
     {
+        _logger.Info("OnRequestClose invoked.");
+        if (RequestClose == null)
+        {
+            _logger.Warning("RequestClose event has no subscribers.");
+        }
+        else
+        {
+            _logger.Info($"RequestClose has {RequestClose.GetInvocationList().Length} subscribers.");
+        }
         RequestClose?.Invoke(this, EventArgs.Empty);
     }
 
