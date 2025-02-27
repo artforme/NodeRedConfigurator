@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Infrastructure.Logging;
+using Models.Domain.Entities;
 using Presentation.Services;
 using Presentation.ViewModels;
 
@@ -12,6 +13,14 @@ public partial class ChainSelectionWindow : Window
     {
         InitializeComponent();
         var viewModel = new ChainSelectionViewModel(chainService, new FileLogger());
+        DataContext = viewModel;
+        viewModel.RequestClose += ViewModel_RequestClose;
+    }
+
+    public ChainSelectionWindow(ChainService chainService, Chain chain)
+    {
+        InitializeComponent();
+        var viewModel = new ChainSelectionViewModel(chainService, chain, new FileLogger());
         DataContext = viewModel;
         viewModel.RequestClose += ViewModel_RequestClose;
     }
