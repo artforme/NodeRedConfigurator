@@ -10,9 +10,13 @@ public class PropertiesSetter
         {
             foreach (var property in obj.Properties())
             {
-                if (property.Value.Type == JTokenType.String && property.Value.ToString() == search)
+                if (property.Value.Type == JTokenType.String)
                 {
-                    property.Value = replace;
+                    string currentValue = property.Value.ToString();
+                    if (currentValue.Contains(search))
+                    {
+                        property.Value = currentValue.Replace(search, replace);
+                    }
                 }
                 else
                 {
@@ -24,9 +28,13 @@ public class PropertiesSetter
         {
             for (int i = 0; i < array.Count; i++)
             {
-                if (array[i].Type == JTokenType.String && array[i].ToString() == search)
+                if (array[i].Type == JTokenType.String)
                 {
-                    array[i] = replace;
+                    string currentValue = array[i].ToString();
+                    if (currentValue.Contains(search))
+                    {
+                        array[i] = currentValue.Replace(search, replace);
+                    }
                 }
                 else
                 {

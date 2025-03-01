@@ -13,7 +13,7 @@ public class TemplateManager
         _configManager = configManager;
     }
 
-    public JObject LoadTemplate(string chainType, string platform)
+    public JToken LoadTemplate(string chainType, string platform)
     {
         var templateFileName = _configManager.GetTemplatePath(chainType, platform);
         if (string.IsNullOrEmpty(templateFileName))
@@ -28,6 +28,6 @@ public class TemplateManager
         }
 
         var json = File.ReadAllText(templatePath);
-        return JObject.Parse(json);
+        return JToken.Parse(json); // Возвращаем JToken, который может быть JObject или JArray
     }
 }

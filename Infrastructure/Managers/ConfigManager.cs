@@ -8,9 +8,9 @@ public class ConfigManager
 
     public ConfigManager(string testDirectory = null)
     {
-        string basePath = testDirectory ?? Directory.GetCurrentDirectory(); // Используем текущую директорию
-        ConfigFilePath = new Info (Path.Combine(basePath, "templates.json"));
-        TemplatesFolderPath = new Info (Path.Combine(basePath, "templates"));
+        string basePath = testDirectory ?? Directory.GetCurrentDirectory();
+        ConfigFilePath = new Info(Path.Combine(basePath, "templates.json"));
+        TemplatesFolderPath = new Info(Path.Combine(basePath, "templates"));
 
         if (!Directory.Exists(TemplatesFolderPath.Value))
         {
@@ -25,9 +25,8 @@ public class ConfigManager
                         ""Alice"": ""RGBStripAlice.json"",
                         ""Apple"": ""RGBStripHomeKit.json""
                     },
-                    ""Type1"": {
-                        ""Alice"": ""type1_alice.json"",
-                        ""Apple"": ""type1_apple.json""
+                    ""Connection"": {
+                        ""Non platform"": ""ConnectionsToServices.json""
                     }
                 }
             }");
@@ -69,6 +68,14 @@ public class ConfigManager
         var config = JObject.Parse(File.ReadAllText(ConfigFilePath.Value));
         var templates = config["Templates"] as JObject;
         return templates?.Properties().Select(p => p.Name) ?? Enumerable.Empty<string>();
+    }
+
+    // Новый метод: проверка, является ли тип цепочки платформозависимым
+    public bool IsPlatformDependent(string chainType)
+    {
+        var config = JObject.Parse(File.ReadAllText(ConfigFilePath.Value));
+        var typeConfig = config["Templates"]?[chainType] as JObject;
+        return typeConfig != null && typeConfig["Alice"] != null && typeConfig["Apple"] != null;
     }
 
     public string GetTemplatesFolderPath() => TemplatesFolderPath.Value;

@@ -24,7 +24,7 @@ public class ChainService
     public ObservableCollection<string> GetChainTypes()
     {
         _logger.Info("Retrieving chain types.");
-        return new ObservableCollection<string> { "RgbStrip", "Type1", "Type2", "Type3" };
+        return new ObservableCollection<string> { "RgbStrip", "SimpleLightOnOff", "Type2", "Type3" };
     }
 
     public ObservableCollection<ChainParameterViewModel> GetParametersForChainType(string chainType)
@@ -40,10 +40,11 @@ public class ChainService
                 parameters.Add(new ChainParameterViewModel("DevIndex", "Number"));
                 parameters.Add(new ChainParameterViewModel("Room", "Text"));
                 break;
-            case "Type1":
+            case "SimpleLightOnOff":
                 parameters.Add(new ChainParameterViewModel("Name", "Text"));
-                parameters.Add(new ChainParameterViewModel("Count", "Number"));
-                parameters.Add(new ChainParameterViewModel("Active", "Boolean"));
+                parameters.Add(new ChainParameterViewModel("Device", "Text"));
+                parameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
+                parameters.Add(new ChainParameterViewModel("Room", "Text"));
                 break;
             default:
                 _logger.Error($"Unsupported chain type: {chainType}");
@@ -82,6 +83,7 @@ public class ChainService
         return chainType switch
         {
             "RgbStrip" => new RgbStripChain(properties),
+            "SimpleLightOnOff" => new SimpleLightOnOff(properties),
             _ => throw new NotSupportedException($"Chain type {chainType} is not supported.")
         };
     }

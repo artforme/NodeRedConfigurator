@@ -10,8 +10,10 @@ public class SettingsChainViewModel : INotifyPropertyChanged
     private readonly ConfigManager _configManager;
     private string _alicePath;
     private string _applePath;
+    private string _singlePath; // Для цепочек без платформ
 
     public string Type { get; set; }
+    public bool IsPlatformIndependent { get; } // Флаг для цепочек без платформ
 
     public string AlicePath
     {
@@ -33,14 +35,40 @@ public class SettingsChainViewModel : INotifyPropertyChanged
         }
     }
 
+    public string SinglePath
+    {
+        get => _singlePath;
+        set
+        {
+            _singlePath = value;
+            OnPropertyChanged(nameof(SinglePath));
+        }
+    }
+
     public ICommand SelectAlicePathCommand { get; }
     public ICommand SelectApplePathCommand { get; }
+    public ICommand SelectSinglePathCommand { get; }
 
-    public SettingsChainViewModel(ConfigManager configManager)
+    public SettingsChainViewModel(ConfigManager configManager, string type)
     {
         _configManager = configManager ?? throw new ArgumentNullException(nameof(configManager));
+        Type = type;
+        IsPlatformIndependent = Type == "Connection"; // Определяем, независим ли тип от платформ
+
         SelectAlicePathCommand = new RelayCommand(SelectAlicePath, CanSelectPath);
         SelectApplePathCommand = new RelayCommand(SelectApplePath, CanSelectPath);
+        SelectSinglePathCommand = new RelayCommand(SelectSinglePath, CanSelectPath);
+
+        // Загружаем существующие пути
+        if (IsPlatformIndependent)
+        {
+            SinglePath = _configManager.GetTemplatePath(Type, "Non platform");
+        }
+        else
+        {
+            AlicePath = _configManager.GetTemplatePath(Type, "Alice");
+            ApplePath = _configManager.GetTemplatePath(Type, "Apple");
+        }
     }
 
     private void SelectAlicePath(object parameter)
@@ -48,12 +76,12 @@ public class SettingsChainViewModel : INotifyPropertyChanged
         var dialog = new OpenFileDialog
         {
             Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-            InitialDirectory = _configManager.TemplatesFolderPath.Value // Устанавливаем начальную папку templates
+            InitialDirectory = _configManager.TemplatesFolderPath.Value
         };
         if (dialog.ShowDialog() == true)
         {
             AlicePath = dialog.FileName;
-            _configManager.SetTemplatePath(Type, "Alice", AlicePath); // Сохраняем путь в ConfigManager
+            _configManager.SetTemplatePath(Type, "Alice", AlicePath);
         }
     }
 
@@ -62,19 +90,30 @@ public class SettingsChainViewModel : INotifyPropertyChanged
         var dialog = new OpenFileDialog
         {
             Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-            InitialDirectory = _configManager.TemplatesFolderPath.Value // Устанавливаем начальную папку templates
+            InitialDirectory = _configManager.TemplatesFolderPath.Value
         };
         if (dialog.ShowDialog() == true)
         {
             ApplePath = dialog.FileName;
-            _configManager.SetTemplatePath(Type, "Apple", ApplePath); // Сохраняем путь в ConfigManager
+            _configManager.SetTemplatePath(Type, "Apple", ApplePath);
         }
     }
 
-    private bool CanSelectPath(object parameter)
+    private void SelectSinglePath(object parameter)
     {
-        return true; // Можно настроить более сложную логику, если нужно
+        var dialog = new OpenFileDialog
+        {
+            Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+            InitialDirectory = _configManager.TemplatesFolderPath.Value
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            SinglePath = dialog.FileName;
+            _configManager.SetTemplatePath(Type, "Non platform", SinglePath);
+        }
     }
+
+    private bool CanSelectPath(object parameter) => true;
 
     public event PropertyChangedEventHandler PropertyChanged;
 

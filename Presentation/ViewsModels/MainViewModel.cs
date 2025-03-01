@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using Infrastructure.Managers;
 using Infrastructure.Logging;
@@ -8,6 +10,11 @@ using Presentation.Helpers;
 using Presentation.Services;
 using Presentation.Views;
 using Presentation.ViewsModels;
+using Infrastructure.Generators;
+using Infrastructure.JsonProcessing;
+using Models.Domain.Entities;
+using Models.Domain.ValueObjects;
+using Newtonsoft.Json.Linq;
 
 namespace Presentation.ViewModels;
 
@@ -17,10 +24,34 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly ConfigManager _configManager;
     private readonly ILogger _logger;
 
+    private string _modelId;
+    private string _serialId;
+
     public ObservableCollection<ChainViewModel> Chains { get; set; } = new();
     public ObservableCollection<SettingsChainViewModel> Templates { get; set; } = new();
     public ICommand RemoveChainCommand { get; }
     public ICommand EditChainCommand { get; }
+    public ICommand GenerateCommand { get; }
+
+    public string ModelId
+    {
+        get => _modelId;
+        set
+        {
+            _modelId = value;
+            OnPropertyChanged(nameof(ModelId));
+        }
+    }
+
+    public string SerialId
+    {
+        get => _serialId;
+        set
+        {
+            _serialId = value;
+            OnPropertyChanged(nameof(SerialId));
+        }
+    }
 
     public MainViewModel(ConfigManager configManager, ChainService chainService, ILogger logger)
     {
@@ -35,6 +66,7 @@ public class MainViewModel : INotifyPropertyChanged
 
         RemoveChainCommand = new RelayCommand(RemoveChain, CanRemoveChain);
         EditChainCommand = new RelayCommand(EditChain, CanEditChain);
+        GenerateCommand = new RelayCommand(Generate, CanGenerate); // Инициализация команды Generate
     }
 
     private void ChainManager_ChainAdded(object sender, ChainEventArgs e)
@@ -49,15 +81,17 @@ public class MainViewModel : INotifyPropertyChanged
         Templates.Clear();
         foreach (var chainType in _configManager.GetAllChainTypes())
         {
-            var alicePath = _configManager.GetTemplatePath(chainType, "Alice");
-            var applePath = _configManager.GetTemplatePath(chainType, "Apple");
-
-            Templates.Add(new SettingsChainViewModel(_configManager)
+            var viewModel = new SettingsChainViewModel(_configManager, chainType);
+            if (viewModel.IsPlatformIndependent)
             {
-                Type = chainType,
-                AlicePath = string.IsNullOrEmpty(alicePath) ? "Путь не задан" : alicePath,
-                ApplePath = string.IsNullOrEmpty(applePath) ? "Путь не задан" : applePath
-            });
+                viewModel.SinglePath = _configManager.GetTemplatePath(chainType, "Non platform") ?? "Путь не задан";
+            }
+            else
+            {
+                viewModel.AlicePath = _configManager.GetTemplatePath(chainType, "Alice") ?? "Путь не задан";
+                viewModel.ApplePath = _configManager.GetTemplatePath(chainType, "Apple") ?? "Путь не задан";
+            }
+            Templates.Add(viewModel);
         }
     }
 
@@ -136,6 +170,103 @@ public class MainViewModel : INotifyPropertyChanged
     private bool CanEditChain(object parameter)
     {
         return parameter is Guid;
+    }
+
+    private void Generate(object parameter)
+    {
+        try
+        {
+            _logger.Info("Starting generation process.");
+            
+            if (string.IsNullOrEmpty(ModelId) || string.IsNullOrEmpty(SerialId))
+            {
+                _logger.Warning("Model ID or Serial ID is empty.");
+                MessageBox.Show("Please enter Model ID and Serial ID.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!Chains.Any())
+            {
+                _logger.Warning("No chains available to generate.");
+                MessageBox.Show("No chains available to generate.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            
+            var templateManager = new TemplateManager(_configManager.GetTemplatesFolderPath(), _configManager);
+            var idGenerator = new IdGenerator();
+            var coordinateSetter = new CoordinateSetter();
+            var idNodesSetter = new IdNodesSetter(idGenerator);
+            var propertiesSetter = new PropertiesSetter();
+            
+            var updatedGlobalSettings = new GlobalSettings(
+                new Info(idGenerator.GenerateSecureIdNodes()), 
+                new Info(idGenerator.GenerateSecureIdNodes()), 
+                new Info(idGenerator.GenerateSecureIdNodes()),     
+                new Info(idGenerator.GenerateSecureIdNodes()),    
+                new Info(idGenerator.GenerateSecureIdNodes()),  
+                new Info(ModelId),
+                new Info(SerialId)
+            );
+
+            var jsonManager = new JsonManager(
+                templateManager,
+                coordinateSetter,
+                idNodesSetter,
+                propertiesSetter,
+                updatedGlobalSettings,
+                _logger
+            );
+
+            var chains = ChainService.ChainManager.GetAllChains().ToList();
+
+            
+            var appleJson = jsonManager.GenerateJson(chains, "Apple");
+            var aliceJson = jsonManager.GenerateJson(chains, "Alice");
+            var connection = jsonManager.GenerateConnectionsJson();
+
+            
+            var combinedJson = new JArray();
+            foreach (var node in appleJson)
+            {
+                combinedJson.Add(node);
+            }
+            foreach (var node in aliceJson)
+            {
+                combinedJson.Add(node);
+            }
+
+            foreach (var node in connection)
+            {
+                combinedJson.Add(node);
+            }
+            
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                FileName = $"config_{ModelId}_{SerialId}.json",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, combinedJson.ToString());
+                _logger.Info($"JSON file saved to {saveFileDialog.FileName}");
+                MessageBox.Show($"File saved successfully to {saveFileDialog.FileName}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                _logger.Info("File save operation canceled by user.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Error during generation", ex);
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+    private bool CanGenerate(object parameter)
+    {
+        return !string.IsNullOrEmpty(ModelId) && !string.IsNullOrEmpty(SerialId) && Chains.Any();
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

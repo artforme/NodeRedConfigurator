@@ -15,17 +15,16 @@ public class IdNodesSetter
     
     public string SearchAndSetIdNodes(JToken jsonToken)
     {
-        string pattern = @"%%IDNode_(\d+)%%";
+        string pattern = @"%%IDNode_(\d+)%%|%%IDNode%%";
+        var idCache = new Dictionary<string, string>(); // Новый кэш для каждой цепочки
         
-        ReplaceIdNodes(jsonToken, pattern);
+        ReplaceIdNodes(jsonToken, pattern, idCache);
         
         return jsonToken.ToString();
     }
     
-    private void ReplaceIdNodes(JToken token, string pattern)
+    private void ReplaceIdNodes(JToken token, string pattern, Dictionary<string, string> idCache)
     {
-        var idCache = new Dictionary<string, string>();
-        
         if (token is JObject obj)
         {
             foreach (var property in obj.Properties())
@@ -49,7 +48,7 @@ public class IdNodesSetter
                 }
                 else
                 {
-                    ReplaceIdNodes(property.Value, pattern);
+                    ReplaceIdNodes(property.Value, pattern, idCache);
                 }
             }
         }
@@ -76,7 +75,7 @@ public class IdNodesSetter
                 }
                 else
                 {
-                    ReplaceIdNodes(array[i], pattern);
+                    ReplaceIdNodes(array[i], pattern, idCache);
                 }
             }
         }
