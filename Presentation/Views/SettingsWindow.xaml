@@ -1,13 +1,20 @@
 ﻿<Window x:Class="Presentation.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:System.Windows.Converters;assembly=Presentation"
+        xmlns:helpers="clr-namespace:Presentation.Helpers"
         Title="Templates' settings" Height="700" Width="900"
         WindowStyle="SingleBorderWindow"
         AllowsTransparency="False"
         Background="Transparent">
+    <Window.Resources>
+        <!-- Конвертер BooleanToVisibility -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!-- Инвертированный конвертер -->
+        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+    </Window.Resources>
     
     <Grid>
-        <!-- Градиентный фон -->
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#1E272E" Offset="0.0"/>
@@ -20,7 +27,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель -->
         <Border Grid.Row="0" Background="#273238" CornerRadius="10,10,0,0" Margin="10" Padding="15">
             <TextBlock Text="Templates' settings" 
                        Foreground="White" 
@@ -29,7 +35,6 @@
                        HorizontalAlignment="Center"/>
         </Border>
 
-        <!-- Центральная область с прокруткой -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="20">
             <ItemsControl ItemsSource="{Binding Templates}">
                 <ItemsControl.ItemTemplate>
@@ -50,32 +55,56 @@
                                                Foreground="White" 
                                                FontWeight="Bold" 
                                                FontSize="16"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <!-- Платформозависимые цепочки -->
+                                    <StackPanel Orientation="Horizontal" 
+                                                Margin="0,5,0,0" 
+                                                Visibility="{Binding IsPlatformIndependent, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                                         <TextBlock Text="Alice: " Foreground="#B0BEC5" FontSize="14"/>
                                         <TextBlock Text="{Binding AlicePath}" Foreground="White" FontSize="14"/>
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal" 
+                                                Margin="0,5,0,0" 
+                                                Visibility="{Binding IsPlatformIndependent, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                                         <TextBlock Text="Apple: " Foreground="#B0BEC5" FontSize="14"/>
                                         <TextBlock Text="{Binding ApplePath}" Foreground="White" FontSize="14"/>
+                                    </StackPanel>
+                                    <!-- Для Connection -->
+                                    <StackPanel Orientation="Horizontal" 
+                                                Margin="0,5,0,0" 
+                                                Visibility="{Binding IsPlatformIndependent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <TextBlock Text="Path: " Foreground="#B0BEC5" FontSize="14"/>
+                                        <TextBlock Text="{Binding SinglePath}" Foreground="White" FontSize="14"/>
                                     </StackPanel>
                                 </StackPanel>
 
                                 <!-- Кнопки выбора пути -->
                                 <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center">
+                                    <!-- Для платформозависимых -->
                                     <Button Content="📁 Alice" 
                                             Background="#2196F3" 
                                             Foreground="White" 
                                             Width="100" 
                                             Height="30" 
                                             Margin="0,5" 
-                                            Command="{Binding SelectAlicePathCommand}"/>
+                                            Command="{Binding SelectAlicePathCommand}"
+                                            Visibility="{Binding IsPlatformIndependent, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                                     <Button Content="📁 Apple" 
                                             Background="#2196F3" 
                                             Foreground="White" 
                                             Width="100" 
                                             Height="30" 
                                             Margin="0,5" 
-                                            Command="{Binding SelectApplePathCommand}"/>
+                                            Command="{Binding SelectApplePathCommand}"
+                                            Visibility="{Binding IsPlatformIndependent, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                    <!-- Для Connection -->
+                                    <Button Content="📁 Path" 
+                                            Background="#2196F3" 
+                                            Foreground="White" 
+                                            Width="100" 
+                                            Height="30" 
+                                            Margin="0,5" 
+                                            Command="{Binding SelectSinglePathCommand}"
+                                            Visibility="{Binding IsPlatformIndependent, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
