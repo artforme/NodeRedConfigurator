@@ -219,7 +219,7 @@ public class MainViewModel : INotifyPropertyChanged
 
             var chains = ChainService.ChainManager.GetAllChains().ToList();
 
-            
+            _logger.Info($"Preparing to generate JSON for {chains.Count} chains: {string.Join(", ", chains.Select(c => $"{c.Type.Value} ({c.Id})"))}");
             var appleJson = jsonManager.GenerateJson(chains, "Apple");
             var aliceJson = jsonManager.GenerateJson(chains, "Alice");
             var connection = jsonManager.GenerateConnectionsJson();

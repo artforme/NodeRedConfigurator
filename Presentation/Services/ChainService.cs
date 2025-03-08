@@ -24,7 +24,7 @@ public class ChainService
     public ObservableCollection<string> GetChainTypes()
     {
         _logger.Info("Retrieving chain types.");
-        return new ObservableCollection<string> { "RgbStrip", "SimpleLightOnOff", "Type2", "Type3" };
+        return new ObservableCollection<string> { "RgbStrip", "SimpleLightOnOff", "WhiteStrip", "Dehumidifier", "Socket", "WarmFloor" };
     }
 
     public ObservableCollection<ChainParameterViewModel> GetParametersForChainType(string chainType)
@@ -41,6 +41,32 @@ public class ChainService
                 parameters.Add(new ChainParameterViewModel("Room", "Text"));
                 break;
             case "SimpleLightOnOff":
+                parameters.Add(new ChainParameterViewModel("Name", "Text"));
+                parameters.Add(new ChainParameterViewModel("Device", "Text"));
+                parameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
+                parameters.Add(new ChainParameterViewModel("Room", "Text"));
+                parameters.Add(new ChainParameterViewModel("Control", "Text"));
+                break;
+            case "WhiteStrip":
+                parameters.Add(new ChainParameterViewModel("Name", "Text"));
+                parameters.Add(new ChainParameterViewModel("Device", "Text"));
+                parameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
+                parameters.Add(new ChainParameterViewModel("Room", "Text"));
+                break;
+            case "Dehumidifier":
+                parameters.Add(new ChainParameterViewModel("Name", "Text"));
+                parameters.Add(new ChainParameterViewModel("Device", "Text"));
+                parameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
+                parameters.Add(new ChainParameterViewModel("DevIndex", "Number"));
+                parameters.Add(new ChainParameterViewModel("Room", "Text"));
+                break;
+            case "Socket":
+                parameters.Add(new ChainParameterViewModel("Name", "Text"));
+                parameters.Add(new ChainParameterViewModel("Device", "Text"));
+                parameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
+                parameters.Add(new ChainParameterViewModel("Room", "Text"));
+                break;
+            case "WarmFloor":
                 parameters.Add(new ChainParameterViewModel("Name", "Text"));
                 parameters.Add(new ChainParameterViewModel("Device", "Text"));
                 parameters.Add(new ChainParameterViewModel("DevAddress", "Text"));
@@ -84,6 +110,10 @@ public class ChainService
         {
             "RgbStrip" => new RgbStripChain(properties),
             "SimpleLightOnOff" => new SimpleLightOnOff(properties),
+            "WhiteStrip" => new WhiteStrip(properties),
+            "Dehumidifier" => new Dehumidifier(properties),
+            "Socket" => new Socket(properties),
+            "WarmFloor" => new WarmFloor(properties),
             _ => throw new NotSupportedException($"Chain type {chainType} is not supported.")
         };
     }

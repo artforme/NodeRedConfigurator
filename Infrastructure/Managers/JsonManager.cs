@@ -29,31 +29,31 @@ public class JsonManager
         _logger = logger;
     }
 
-    // Метод для цепочек
     public JArray GenerateJson(IEnumerable<Chain> chains, string platform)
     {
         var finalResult = new JArray();
+        var flowCounters = new Dictionary<string, int>(); // Один словарь для всех цепочек
         foreach (var chain in chains)
         {
-            var nodes = ProcessTemplate(chain.Type.Value, platform, chain);
+            var nodes = ProcessTemplate(chain.Type.Value, platform, chain, flowCounters);
             foreach (var node in nodes)
             {
                 finalResult.Add(node);
             }
+            _logger.Info($"Added {nodes.Count} nodes for {chain.Type.Value} ({chain.Id}), total: {finalResult.Count}");
         }
         return finalResult;
     }
     
     public JArray GenerateConnectionsJson()
     {
-        return ProcessTemplate("Connection");
+        var flowCounters = new Dictionary<string, int>();
+        return ProcessTemplate("Connection", "Non platform", null, flowCounters);
     }
 
-    // Универсальный метод обработки шаблона
-    private JArray ProcessTemplate(string chainType, string platform = "Non platform", Chain chain = null)
+    private JArray ProcessTemplate(string chainType, string platform, Chain chain, Dictionary<string, int> flowCounters)
     {
         _logger.Info($"Processing template: {chainType} for platform: {platform}{(chain != null ? $" with chain: {chain.Id}" : "")}");
-
         var template = _templateManager.LoadTemplate(chainType, platform);
         JObject chainJson;
 
@@ -74,10 +74,7 @@ public class JsonManager
             throw new InvalidOperationException($"Invalid template format for {chainType} ({platform}).");
         }
 
-        // Заменяем ID узлов
         _idNodesSetter.SearchAndSetIdNodes(chainJson);
-
-        // Заменяем свойства из chain.GetProperties(), если цепочка есть
         if (chain != null)
         {
             var chainProperties = chain.GetProperties();
@@ -95,18 +92,15 @@ public class JsonManager
         _propertiesSetter.SearchAndSetProperties(chainJson, "%%Bridge%%", _globalSettings.BridgeId.Value);
         _propertiesSetter.SearchAndSetProperties(chainJson, "%%Cloud%%", _globalSettings.CloudId.Value);
 
-        // Обновляем координаты
         var tempArray = new JArray { chainJson };
-        var flowCounters = new Dictionary<string, int>();
-        _coordinateSetter.UpdateCoordinates(tempArray, flowCounters);
+        _coordinateSetter.UpdateCoordinates(tempArray, flowCounters, platform);
+        _logger.Info($"Updated coordinates for {chainType} ({platform}), flowCounters: {string.Join(", ", flowCounters.Select(kv => $"{kv.Key}: {kv.Value}"))}");
 
-        // Извлекаем template
         if (chainJson["template"] is JArray templateArray)
         {
             return templateArray;
         }
         
         throw new InvalidOperationException($"Template for {chainType} ({platform}) must contain a 'template' array.");
-
     }
 }

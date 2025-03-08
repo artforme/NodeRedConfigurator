@@ -1,42 +1,40 @@
-    using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
-    namespace Infrastructure.JsonProcessing;
+namespace Infrastructure.JsonProcessing;
 
-    public class CoordinateSetter
+public class CoordinateSetter
+{
+    private const int DefaultPadding = 100;
+
+    public void UpdateCoordinates(JArray data, Dictionary<string, int> flowCounters, string platform)
     {
-        public void UpdateCoordinates(JArray data, Dictionary<string, int> flowCounters)
+        foreach (JObject item in data)
         {
-            foreach (JObject item in data)
+            if (!item.ContainsKey("height") || item["height"] == null)
             {
-                // Проверяем наличие "tab" и "height"
-                if (!item.ContainsKey("tab") || item["tab"] == null || !item.ContainsKey("height") || item["height"] == null)
-                {
-                    return; // Выходим из функции, если "tab" или "height" отсутствуют
-                }
+                return;
+            }
 
-                string flow = item["tab"].ToString();
-                int height = item["height"].Value<int>();
-                
-                if (!flowCounters.ContainsKey(flow))
+            int height = item["height"].Value<int>();
+            
+            if (!flowCounters.ContainsKey(platform))
+            {
+                flowCounters[platform] = 0;
+            }
+            
+            if (item["template"] is JArray template)
+            {
+                foreach (JObject templateItem in template)
                 {
-                    flowCounters[flow] = height;
-                }
-                else
-                {
-                    flowCounters[flow] += height;
-                }
-                
-                if (item["template"] is JArray template)
-                {
-                    foreach (JObject templateItem in template)
+                    if (templateItem.ContainsKey("y"))
                     {
-                        if (templateItem.ContainsKey("y"))
-                        {
-                            int currentY = templateItem["y"].Value<int>();
-                            templateItem["y"] = currentY + flowCounters[flow];
-                        }
+                        int currentY = templateItem["y"].Value<int>();
+                        templateItem["y"] = currentY + flowCounters[platform];
                     }
                 }
             }
+            
+            flowCounters[platform] += height + DefaultPadding;
         }
     }
+}

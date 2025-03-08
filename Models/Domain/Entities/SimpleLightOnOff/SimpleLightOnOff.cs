@@ -13,7 +13,8 @@ public class SimpleLightOnOff : Chain
             { "Name", "%%name%%" },
             { "Device", "%%device%%" },
             { "DevAddress", "%%dev_address%%" },
-            { "Room", "%%room%%" }
+            { "Room", "%%room%%" },
+            { "Control", "%%control%%" }
         };
 
         var propertiesList = new List<(string search, object replace)>();
