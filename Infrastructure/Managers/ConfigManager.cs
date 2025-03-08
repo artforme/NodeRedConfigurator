@@ -20,16 +20,36 @@ public class ConfigManager
         if (!File.Exists(ConfigFilePath.Value))
         {
             File.WriteAllText(ConfigFilePath.Value, @"{
-                ""Templates"": {
-                    ""RgbStrip"": {
-                        ""Alice"": ""RGBStripAlice.json"",
-                        ""Apple"": ""RGBStripHomeKit.json""
-                    },
-                    ""Connection"": {
-                        ""Non platform"": ""ConnectionsToServices.json""
-                    }
-                }
-            }");
+                      ""Templates"": {
+                        ""Connection"": {
+                          ""Non platform"": ""Подключения + вкладка.json""
+                        },
+                        ""RgbStrip"": {
+                          ""Alice"": ""RGBStripAlice.json"",
+                          ""Apple"": ""RGBStripHomeKit.json""
+                        },
+                        ""SimpleLightOnOff"": {
+                          ""Alice"": ""Лампа простая.json"",
+                          ""Apple"": ""Лампа простая HomeKit.json""
+                        },
+                        ""WhiteStrip"": {
+                          ""Alice"": ""White лента.json"",
+                          ""Apple"": ""White лента HomeKit.json""
+                        },
+                        ""Dehumidifier"": {
+                          ""Alice"": ""Осушитель.json"",
+                          ""Apple"": ""Осушитель HomeKit.json""
+                        },
+                        ""Socket"": {
+                          ""Alice"": ""Розетки.json"",
+                          ""Apple"": ""Розетки HomeKit.json""
+                        },
+                        ""WarmFloor"": {
+                          ""Alice"": ""Теплый пол.json"",
+                          ""Apple"": ""Теплый пол HomeKit.json""
+                        }
+                      }
+                    }");
         }
     }
 
@@ -44,7 +64,8 @@ public class ConfigManager
     {
         if (!fullPath.StartsWith(TemplatesFolderPath.Value))
         {
-            throw new ArgumentException($"Template file must be located in the 'templates' folder: {TemplatesFolderPath}");
+            throw new ArgumentException(
+                $"Template file must be located in the 'templates' folder: {TemplatesFolderPath}");
         }
 
         var config = JObject.Parse(File.ReadAllText(ConfigFilePath.Value));
